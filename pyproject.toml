@@ -3,7 +3,7 @@ name = "homework-5"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Your Name",email = "you@example.com"}
+    {name = "xziste",email = "17alexdmz99@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.13"
@@ -18,3 +18,23 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.group.lint.dependencies]
 black = "^25.9.0"
 
+
+[tool.black]
+# Максимальная длина строки
+line-length = 119
+# Файлы, которые не нужно форматировать
+exclude = '''
+(
+  /(
+      \.eggs         # Исключить несколько общих каталогов
+    | \.git          # в корне проекта
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | dist
+  )/
+  | foo.py           # Также отдельно исключить файл с именем foo.py
+                     # в корне проекта
+)
+'''
