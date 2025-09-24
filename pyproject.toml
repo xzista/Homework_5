@@ -8,6 +8,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "django (>=5.2.6,<6.0.0)"
 ]
 
 
@@ -18,6 +19,10 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.group.lint.dependencies]
 black = "^25.9.0"
 
+
+
+[tool.poetry.group.dev.dependencies]
+python-dotenv = "^1.1.1"
 
 [tool.black]
 # Максимальная длина строки
