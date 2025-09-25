@@ -19,7 +19,7 @@ class Course(models.Model):
         return self.name
 
 
-class Lessons(models.Model):
+class Lesson(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название урока", help_text="Укажите название урока")
     description = models.TextField(verbose_name="Описание", help_text="Введите описание урока", blank=True, null=True)
     course = models.ForeignKey(
