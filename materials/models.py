@@ -24,7 +24,7 @@ class Lessons(models.Model):
     description = models.TextField(verbose_name="Описание", help_text="Введите описание урока", blank=True, null=True)
     course = models.ForeignKey(
         Course,
-        on_delete=models.CASCADE(),
+        on_delete=models.CASCADE,
         verbose_name="Курс урока",
         help_text="Выберите к какому курсу относится урок",
     )
