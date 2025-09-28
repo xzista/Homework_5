@@ -25,7 +25,7 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "user",
-        "data",
+        "date",
         "content_type",
         "object_id",
         "paid_object",

@@ -35,7 +35,7 @@ class Payment(models.Model):
         verbose_name="Оплативший пользователь",
         help_text="Укажите плательщика",
         related_name="payments",)
-    data = models.DateTimeField(verbose_name="Дата проведения оплаты", auto_now_add=True)
+    date = models.DateTimeField(verbose_name="Дата проведения оплаты", auto_now_add=True)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
