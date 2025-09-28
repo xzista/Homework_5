@@ -26,15 +26,17 @@ class User(AbstractUser):
 
 class Payment(models.Model):
     PAYMENT_METHODS = [
-        ('cash', 'Наличные'),
-        ('transfer', 'Перевод на счет'),
+        ("cash", "Наличные"),
+        ("transfer", "Перевод на счет"),
     ]
 
-    user = models.ForeignKey(User,
+    user = models.ForeignKey(
+        User,
         on_delete=models.CASCADE,
         verbose_name="Оплативший пользователь",
         help_text="Укажите плательщика",
-        related_name="payments",)
+        related_name="payments",
+    )
     date = models.DateTimeField(verbose_name="Дата проведения оплаты", auto_now_add=True)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)

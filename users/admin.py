@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from users.models import User, Payment
+from users.models import Payment, User
 
 
 @admin.register(User)
@@ -18,7 +18,12 @@ class UserAdmin(admin.ModelAdmin):
         "city",
         "is_active",
     )
-    search_fields = ("email", "city", "phone",)
+    search_fields = (
+        "email",
+        "city",
+        "phone",
+    )
+
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):

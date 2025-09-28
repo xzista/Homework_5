@@ -2,7 +2,7 @@ import django_filters
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 
-from users.models import User, Payment
+from users.models import Payment, User
 
 
 class PaymentFilter(django_filters.FilterSet):
@@ -10,12 +10,12 @@ class PaymentFilter(django_filters.FilterSet):
 
     payment_method = django_filters.CharFilter(lookup_expr="iexact")
 
-    paid_object = django_filters.CharFilter(method='filter_object_type')
+    paid_object = django_filters.CharFilter(method="filter_object_type")
 
     def filter_object_type(self, queryset, name, value):
-        if value == 'course':
+        if value == "course":
             return queryset.filter(content_type_id=7)
-        elif value == 'lesson':
+        elif value == "lesson":
             return queryset.filter(content_type_id=8)
         return queryset
 
@@ -27,7 +27,7 @@ class PaymentFilter(django_filters.FilterSet):
 class PaymentSerializer(ModelSerializer):
     class Meta:
         model = Payment
-        fields = '__all__'
+        fields = "__all__"
 
 
 class UserSerializer(ModelSerializer):
@@ -39,4 +39,8 @@ class UserSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ("password", "last_login", "is_superuser",)
+        exclude = (
+            "password",
+            "last_login",
+            "is_superuser",
+        )
