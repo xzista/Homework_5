@@ -27,6 +27,7 @@ class Lesson(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Курс урока",
         help_text="Выберите к какому курсу относится урок",
+        related_name="lessons",
     )
     preview_image = models.ImageField(
         upload_to="materials/lesson_preview_image/", blank=True, null=True, help_text="Загрузите превью урока"
