@@ -9,7 +9,14 @@ class Course(models.Model):
     preview_image = models.ImageField(
         upload_to="materials/course_preview_image/", blank=True, null=True, help_text="Загрузите превью курса"
     )
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Владелец', help_text='Укажите владельца курса')
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Владелец",
+        help_text="Укажите владельца курса",
+    )
 
     class Meta:
         verbose_name = "Курс"
@@ -38,7 +45,14 @@ class Lesson(models.Model):
     url_video = models.CharField(
         max_length=100, verbose_name="Ссылка на видео урока", help_text="Укажите ссылку на видео урока"
     )
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Владелец', help_text='Укажите владельца урока')
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Владелец",
+        help_text="Укажите владельца урока",
+    )
 
     class Meta:
         verbose_name = "Урок"
