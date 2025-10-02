@@ -5,4 +5,5 @@ class IsModer(permissions.BasePermission):
     message = 'Отказано в доступе'
 
     def has_permission(self, request, view):
-        return request.user.groups.filter(name='Модераторы').exists()
+        return request.user.is_authenticated and \
+            request.user.groups.filter(name='Модераторы').exists()
