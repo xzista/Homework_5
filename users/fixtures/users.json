@@ -1,0 +1,84 @@
+[
+{
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$7VT0q4O3JRsOARhuk3FSu9$DA2iGZPgTF2MYvawL5csPlL1d3bp2g972r3omEcGXf0=",
+        "last_login": "2025-09-27T17:04:01.402Z",
+        "is_superuser": true,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2025-09-27T17:03:53.618Z",
+        "email": "admin@example.com",
+        "phone": null,
+        "city": null,
+        "avatar": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$sbVIsQepVzg9QodJ5UoFYG$6VIepr07MNNnDP6Uf3qHFPTtj0eZTJwNC2W2QN+mtRw=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-09-28T12:13:56Z",
+        "email": "user1@example.com",
+        "phone": null,
+        "city": null,
+        "avatar": "",
+        "groups": [
+            1
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 3,
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$VXLU2fkxchZMoLRw42RnTg$lf1STtNw75CuG0pedRsyOsz4tf7MIRCbi2ivtYRXwd4=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-09-28T12:15:12.067Z",
+        "email": "user2@example.com",
+        "phone": null,
+        "city": null,
+        "avatar": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 4,
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$xkM1nu6k94GTwkCpusIETp$AYn6kC6AMfuxDGxQVc7fUJnfXeK1BFGGPMgg+NKUgcU=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-09-28T12:16:27.296Z",
+        "email": "user3@example.com",
+        "phone": null,
+        "city": null,
+        "avatar": "",
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]
