@@ -1,11 +1,21 @@
 from django.db import models
 
+from users.models import User
+
 
 class Course(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название курса", help_text="Укажите название курса")
     description = models.TextField(verbose_name="Описание", help_text="Введите описание курса", blank=True, null=True)
     preview_image = models.ImageField(
         upload_to="materials/course_preview_image/", blank=True, null=True, help_text="Загрузите превью курса"
+    )
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Владелец",
+        help_text="Укажите владельца курса",
     )
 
     class Meta:
@@ -34,6 +44,14 @@ class Lesson(models.Model):
     )
     url_video = models.CharField(
         max_length=100, verbose_name="Ссылка на видео урока", help_text="Укажите ссылку на видео урока"
+    )
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Владелец",
+        help_text="Укажите владельца урока",
     )
 
     class Meta:
