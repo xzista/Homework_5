@@ -1,6 +1,6 @@
 from django.db import models
 
-from users.models import User
+from django.conf import settings
 
 
 class Course(models.Model):
@@ -10,7 +10,7 @@ class Course(models.Model):
         upload_to="materials/course_preview_image/", blank=True, null=True, help_text="Загрузите превью курса"
     )
     owner = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -46,7 +46,7 @@ class Lesson(models.Model):
         max_length=100, verbose_name="Ссылка на видео урока", help_text="Укажите ссылку на видео урока"
     )
     owner = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
