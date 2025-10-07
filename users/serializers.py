@@ -39,8 +39,22 @@ class UserSerializer(ModelSerializer):
 
     class Meta:
         model = User
+        fields = '__all__'
+
+
+class UserPublicSerializer(ModelSerializer):
+    payments = SerializerMethodField()
+
+    def get_payments(self, user):
+        payments = user.payments.all()
+        return PaymentSerializer(payments, many=True).data
+
+    class Meta:
+        model = User
         exclude = (
             "password",
             "last_login",
+            "last_name",
             "is_superuser",
+            "payments",
         )
