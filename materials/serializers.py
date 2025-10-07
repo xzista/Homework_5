@@ -7,7 +7,7 @@ from users.models import Subscription
 
 
 class LessonSerializer(serializers.ModelSerializer):
-    url = serializers.CharField(validators=[validate_video_url])
+    url_video = serializers.CharField(validators=[validate_video_url])
 
     class Meta:
         model = Lesson
