@@ -11,7 +11,7 @@ from materials.models import Course, Lesson
 from materials.serializers import (CourseDetailSerializer, CourseSerializer,
                                    LessonSerializer)
 from users.models import Subscription
-from users.permissions import IsModer, IsOwner
+from users.permissions import IsModer, IsOwner, IsNotModer
 
 
 class CourseViewSet(ModelViewSet):
@@ -29,12 +29,12 @@ class CourseViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.action == "create":
-            self.permission_classes = (~IsModer,)
+            self.permission_classes = (IsNotModer,)
         elif self.action in ["update", "retrieve"]:
             self.permission_classes = (IsModer | IsOwner,)
         elif self.action == "destroy":
             self.permission_classes = (
-                ~IsModer,
+                IsNotModer,
                 IsOwner,
             )
         return super().get_permissions()
@@ -45,7 +45,7 @@ class LessonsCreateApiView(CreateAPIView):
     serializer_class = LessonSerializer
     permission_classes = [
         IsAuthenticated,
-        ~IsModer,
+        IsNotModer,
     ]
 
     def perform_create(self, serializer):
@@ -75,7 +75,7 @@ class LessonUpdateApiView(UpdateAPIView):
 class LessonDestroyApiView(DestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [IsAuthenticated, ~IsModer, IsOwner]
+    permission_classes = [IsAuthenticated, IsNotModer, IsOwner]
 
 
 class SubscriptionAPIView(APIView):
