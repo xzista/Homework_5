@@ -3,13 +3,24 @@ from rest_framework import permissions
 
 class IsModer(permissions.BasePermission):
     """
-    Проверяет, является ли пользователь модератором.
+    Проверяет, что пользователь является модератором
     """
 
     message = "Отказано в доступе"
 
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.groups.filter(name="Модераторы").exists()
+
+
+class IsNotModer(permissions.BasePermission):
+    """
+    Проверяет, что пользователь НЕ является модератором
+    """
+
+    message = "Модераторам запрещено это действие"
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and not request.user.groups.filter(name="Модераторы").exists()
 
 
 class IsOwner(permissions.BasePermission):
