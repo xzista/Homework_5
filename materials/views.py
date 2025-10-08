@@ -12,14 +12,14 @@ from materials.paginators import CustomPagination
 from materials.serializers import (CourseDetailSerializer, CourseSerializer,
                                    LessonSerializer)
 from users.models import Subscription
-from users.permissions import IsModer, IsOwner, IsNotModer
+from users.permissions import IsModer, IsNotModer, IsOwner
 
 
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
 
     def get_pagination_class(self):
-        if self.action == 'list':
+        if self.action == "list":
             return CustomPagination
         return None
 
@@ -90,16 +90,16 @@ class SubscriptionAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
-        course_id = request.data.get('course_id')
+        course_id = request.data.get("course_id")
         course = get_object_or_404(Course, id=course_id)
 
         subscription = Subscription.objects.filter(user=user, course=course)
 
         if subscription.exists():
             subscription.delete()
-            message = 'Подписка удалена'
+            message = "Подписка удалена"
         else:
             Subscription.objects.create(user=user, course=course)
-            message = 'Подписка добавлена'
+            message = "Подписка добавлена"
 
         return Response({"message": message})

@@ -70,9 +70,7 @@ class Subscription(models.Model):
         related_name="subscriptions",
     )
     is_active = models.BooleanField(
-        default=True,
-        verbose_name="Активная подписка",
-        help_text="Отметьте, если подписка активна"
+        default=True, verbose_name="Активная подписка", help_text="Отметьте, если подписка активна"
     )
     subscribed_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата подписки")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
@@ -83,4 +81,4 @@ class Subscription(models.Model):
 
     def __str__(self):
         status = "активна" if self.is_active else "неактивна"
-        return f'Подписка пользователя {self.user} на курс {self.course} - {status}'
+        return f"Подписка пользователя {self.user} на курс {self.course} - {status}"
