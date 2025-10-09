@@ -46,5 +46,39 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, verbose_name="Способ оплаты")
 
+    class Meta:
+        verbose_name = "Оплата"
+        verbose_name_plural = "Оплаты"
+
     def __str__(self):
         return f"Оплата {self.paid_object} пользователем {self.user}"
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Подписавшейся пользователь",
+        help_text="Укажите пользователя",
+        related_name="subscriptions",
+    )
+    course = models.ForeignKey(
+        "materials.Course",
+        on_delete=models.CASCADE,
+        verbose_name="Курс",
+        help_text="Подписка на курс",
+        related_name="subscriptions",
+    )
+    is_active = models.BooleanField(
+        default=True, verbose_name="Активная подписка", help_text="Отметьте, если подписка активна"
+    )
+    subscribed_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата подписки")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+
+    class Meta:
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
+
+    def __str__(self):
+        status = "активна" if self.is_active else "неактивна"
+        return f"Подписка пользователя {self.user} на курс {self.course} - {status}"
