@@ -6,8 +6,6 @@ from users.models import Payment, User
 
 
 class PaymentFilter(django_filters.FilterSet):
-    ordering = django_filters.OrderingFilter(fields=(("date", "date"),))
-
     payment_method = django_filters.CharFilter(lookup_expr="iexact")
 
     paid_object = django_filters.CharFilter(method="filter_object_type")
