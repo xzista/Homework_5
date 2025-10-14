@@ -1,15 +1,19 @@
+import requests
 import stripe
 
 from config.settings import STRIPE_API_KEY
-from pycurrency import converter
 
 stripe.api_key = STRIPE_API_KEY
 
 
 def convert_rub_to_dollars(amount):
     """Конвертирует рубли в доллары"""
-    my_converter = converter.Converter(amount, 'RUB', 'USD')
-    return my_converter.result()
+    api_url = 'https://open.er-api.com/v6/latest/RUB'
+
+    response = requests.get(api_url, timeout=5)
+    data = response.json()
+    rate = data['rates']['USD']
+    return amount * rate
 
 
 def create_stripe_price(amount):
