@@ -21,7 +21,7 @@ class Course(models.Model):
         decimal_places=2,
         default=0.00,
         verbose_name="Стоимость курса",
-        help_text="Укажите стоимость курса в рублях"
+        help_text="Укажите стоимость курса в рублях",
     )
 
     class Meta:
@@ -64,7 +64,7 @@ class Lesson(models.Model):
         decimal_places=2,
         default=0.00,
         verbose_name="Стоимость урока",
-        help_text="Укажите стоимость урока в рублях"
+        help_text="Укажите стоимость урока в рублях",
     )
 
     class Meta:

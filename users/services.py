@@ -22,11 +22,11 @@ def get_content_type_by_name(content_type_name):
 
 def convert_rub_to_dollars(amount):
     """Конвертирует рубли в доллары"""
-    api_url = 'https://open.er-api.com/v6/latest/RUB'
+    api_url = "https://open.er-api.com/v6/latest/RUB"
 
     response = requests.get(api_url, timeout=5)
     data = response.json()
-    rate = Decimal(str(data['rates']['USD']))
+    rate = Decimal(str(data["rates"]["USD"]))
     return amount * rate
 
 
@@ -47,9 +47,9 @@ def create_stripe_session(payment):
     )
 
     session = stripe.checkout.Session.create(
-        payment_method_types=['card'],
-        line_items=[{'price': price.id, 'quantity': 1}],
-        mode='payment',
+        payment_method_types=["card"],
+        line_items=[{"price": price.id, "quantity": 1}],
+        mode="payment",
         success_url=f"http://127.0.0.1:8000/payments/{payment.id}/success/",
         cancel_url=f"http://127.0.0.1:8000/payments/{payment.id}/cancel/",
     )

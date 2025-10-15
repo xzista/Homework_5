@@ -25,13 +25,20 @@ class PaymentSerializer(ModelSerializer):
     class Meta:
         model = Payment
         fields = "__all__"
-        read_only_fields = ('amount', 'stripe_session_id', 'payment_link',
-                            'payment_status', 'stripe_payment_intent_id', 'user', 'date')
+        read_only_fields = (
+            "amount",
+            "stripe_session_id",
+            "payment_link",
+            "payment_status",
+            "stripe_payment_intent_id",
+            "user",
+            "date",
+        )
 
     def validate(self, attrs):
         """Проверяем, что оплачиваемый объект существует и имеет цену"""
-        content_type = attrs.get('content_type')
-        object_id = attrs.get('object_id')
+        content_type = attrs.get("content_type")
+        object_id = attrs.get("object_id")
 
         if content_type and object_id:
             try:
@@ -39,7 +46,7 @@ class PaymentSerializer(ModelSerializer):
                 paid_object = content_type.get_object_for_this_type(id=object_id)
 
                 # Проверяем, что у объекта есть цена
-                if not hasattr(paid_object, 'price'):
+                if not hasattr(paid_object, "price"):
                     raise serializers.ValidationError("У выбранного объекта нет цены")
 
                 # Проверяем, что цена больше 0
@@ -53,7 +60,7 @@ class PaymentSerializer(ModelSerializer):
 
     def create(self, validated_data):
         """Автоматически устанавливаем пользователя из запроса"""
-        validated_data['user'] = self.context['request'].user
+        validated_data["user"] = self.context["request"].user
         return super().create(validated_data)
 
 

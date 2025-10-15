@@ -13,10 +13,12 @@ class PaymentAdmin(admin.ModelAdmin):
         "price",
         "preview_image",
     )
-    list_filter = (
-        "owner",
+    list_filter = ("owner",)
+    search_fields = (
+        "name",
+        "description",
     )
-    search_fields = ("name", "description",)
+
 
 @admin.register(Lesson)
 class PaymentAdmin(admin.ModelAdmin):
@@ -34,5 +36,7 @@ class PaymentAdmin(admin.ModelAdmin):
         "owner",
         "course",
     )
-    search_fields = ("name", "description",)
-
+    search_fields = (
+        "name",
+        "description",
+    )
