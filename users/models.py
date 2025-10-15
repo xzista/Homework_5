@@ -50,13 +50,19 @@ class Payment(models.Model):
     object_id = models.PositiveIntegerField()
     paid_object = GenericForeignKey("content_type", "object_id")
 
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, verbose_name="Способ оплаты")
 
     stripe_session_id = models.CharField(
         max_length=255,
         verbose_name="ID сессии Stripe",
         help_text="Укажите ID сессии Stripe",
+        blank=True,
+        null=True
+    )
+    stripe_payment_intent_id = models.CharField(
+        max_length=255,
+        verbose_name="ID платежа Stripe",
         blank=True,
         null=True
     )
@@ -79,6 +85,18 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Оплата {self.paid_object} пользователем {self.user}"
+
+    def _get_paid_object_price(self):
+        """Получает цену из оплачиваемого объекта (курса или урока)"""
+        if self.paid_object:
+            return getattr(self.paid_object, 'price', 0)
+        return 0
+
+    def save(self, *args, **kwargs):
+        """Автоматически устанавливаем сумму при создании платежа"""
+        if not self.pk:
+            self.amount = self._get_paid_object_price()
+        super().save(*args, **kwargs)
 
 
 class Subscription(models.Model):
