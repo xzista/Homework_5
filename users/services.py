@@ -16,21 +16,28 @@ def convert_rub_to_dollars(amount):
     return amount * rate
 
 
-def create_stripe_price(amount):
-    """Создает цену в Stripe"""
-    return stripe.Price.create(
-        currency="usd",
-        unit_amount=amount * 100,
-        # recurring={"interval": "month"},
-        product_data={"name": "Gold Plan"},
-    )
-
-
-def create_stripe_session(price):
+def create_stripe_session(payment):
     """Создает сессию на оплату в Stripe"""
-    session = stripe.checkout.Session.create(
-        success_url="http://127.0.0.1:8000/success",
-        line_items=[{"price": price.get("id"), "quantity": 1}],
-        mode="payment",
+
+    amount_rub = payment.amount
+
+    amount_cents = convert_rub_to_dollars(amount_rub)
+
+    product_name = f"{payment.paid_object._meta.verbose_name}: {payment.paid_object}"
+    product = stripe.Product.create(name=product_name)
+
+    price = stripe.Price.create(
+        currency="usd",
+        unit_amount=amount_cents,
+        product=product.id,
     )
-    return session.get("id", session.get("url"))
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{'price': price.id, 'quantity': 1}],
+        mode='payment',
+        success_url=f"http://127.0.0.1:8000/payments/{payment.id}/success/",
+        cancel_url=f"http://127.0.0.1:8000/payments/{payment.id}/cancel/",
+    )
+
+    return session.id, session.url
