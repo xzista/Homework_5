@@ -28,6 +28,7 @@ class Payment(models.Model):
     PAYMENT_METHODS = [
         ("cash", "Наличные"),
         ("transfer", "Перевод на счет"),
+        ("stripe", "Stripe"),
     ]
 
     PAYMENT_STATUSES = [
