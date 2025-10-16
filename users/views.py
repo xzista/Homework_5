@@ -10,6 +10,7 @@ from users.models import Payment, User
 from users.permissions import UserProfilePermission
 from users.serializers import (PaymentFilter, PaymentSerializer,
                                UserPublicSerializer, UserSerializer)
+from users.services import create_stripe_session
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -64,3 +65,10 @@ class PaymentViewSet(ModelViewSet):
         # if self.action == 'retrieve':
         #     return PaymentDetailSerializer
         return PaymentSerializer
+
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        session_id, payment_link = create_stripe_session(payment)
+        payment.stripe_session_id = session_id
+        payment.payment_link = payment_link
+        payment.save()
