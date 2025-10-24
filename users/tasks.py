@@ -1,6 +1,10 @@
+from datetime import timedelta
+
 from celery import shared_task
 from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+
 from materials.models import Course, Lesson
 from users.models import Subscription
 from config.settings import EMAIL_HOST_USER
@@ -61,3 +65,25 @@ def send_course_update_email(user_id, course_id, lesson_id=None):
     )
 
     return f"Email sent to {user.email}"
+
+
+@shared_task
+def deactivate_inactive_users():
+    """
+    Блокировка пользователей, которые не заходили более месяца
+    """
+    month_ago = timezone.now() - timedelta(days=30)
+
+    inactive_users = User.objects.filter(
+        last_login__lt=month_ago,
+        is_active=True
+    )
+
+    user_count = inactive_users.count()
+
+    if user_count > 0:
+        inactive_users.update(is_active=False)
+
+        return f"Deactivated {user_count} inactive users"
+    else:
+        return "No inactive users found for deactivation"
