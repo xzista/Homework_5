@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from users.models import Payment, User
+from users.models import Payment, User, Subscription
 
 
 @admin.register(User)
@@ -10,36 +10,47 @@ class UserAdmin(admin.ModelAdmin):
         "email",
         "phone",
         "city",
-        "avatar",
         "is_active",
+        "get_subscriptions_count",
+        "get_active_subscriptions_count",
     )
     list_filter = (
-        "email",
-        "city",
         "is_active",
+        "city",
     )
     search_fields = (
         "email",
-        "city",
         "phone",
+        "city",
     )
 
+    def get_subscriptions_count(self, obj):
+        return obj.subscriptions.count()
 
-@admin.register(Payment)
-class PaymentAdmin(admin.ModelAdmin):
+    get_subscriptions_count.short_description = "Всего подписок"
+
+    def get_active_subscriptions_count(self, obj):
+        return obj.subscriptions.filter(is_active=True).count()
+
+    get_active_subscriptions_count.short_description = "Активных подписок"
+
+
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "user",
-        "date",
-        "content_type",
-        "object_id",
-        "paid_object",
-        "amount",
-        "payment_method",
+        "course",
+        "is_active",
+        "subscribed_at",
     )
     list_filter = (
-        "user",
-        "amount",
-        "payment_method",
+        "is_active",
+        "course",
+        "subscribed_at",
     )
-    search_fields = ("user",)
+    search_fields = (
+        "user__email",
+        "course__name",
+    )
+    list_editable = ("is_active",)
