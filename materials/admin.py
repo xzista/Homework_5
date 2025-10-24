@@ -12,6 +12,7 @@ class PaymentAdmin(admin.ModelAdmin):
         "owner",
         "price",
         "preview_image",
+        "updated_at",
     )
     list_filter = ("owner",)
     search_fields = (
