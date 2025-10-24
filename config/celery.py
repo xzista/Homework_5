@@ -1,6 +1,7 @@
 import os
 
 from celery import Celery
+from celery.schedules import crontab
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
@@ -16,6 +17,19 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
 
+# Beat
+app.conf.beat_schedule = {
+    'deactivate-inactive-users-every-day': {
+        'task': 'users.tasks.deactivate_inactive_users',
+        'schedule': crontab(hour=6, minute=0),
+        # 'schedule': crontab(hour=0, minute=0),  # Каждый день в полночь
+        # 'schedule': crontab(hour=9, minute=0, day_of_week=1),  # Каждый понедельник в 9:00
+        # 'schedule': timedelta(days=1),  # Каждые 24 часа
+    },
+}
+
+app.conf.timezone = 'Europe/Moscow'  # Укажите вашу временную зону
+app.conf.enable_utc = False
 
 @app.task(bind=True, ignore_result=True)
 def debug_task(self):
