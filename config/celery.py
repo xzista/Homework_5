@@ -28,7 +28,7 @@ app.conf.beat_schedule = {
     },
 }
 
-app.conf.timezone = 'Europe/Moscow'  # Укажите вашу временную зону
+app.conf.timezone = 'Europe/Moscow'
 app.conf.enable_utc = False
 
 @app.task(bind=True, ignore_result=True)
