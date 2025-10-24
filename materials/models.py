@@ -23,6 +23,11 @@ class Course(models.Model):
         verbose_name="Стоимость курса",
         help_text="Укажите стоимость курса в рублях",
     )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Дата последнего обновления",
+        help_text="Автоматически обновляется при изменении курса или его уроков"
+    )
 
     class Meta:
         verbose_name = "Курс"
