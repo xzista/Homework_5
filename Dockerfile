@@ -5,7 +5,6 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     gcc \
     python3-dev \
-    curl \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install poetry
@@ -19,8 +18,6 @@ RUN poetry install --no-dev --no-interaction --no-ansi
 COPY . .
 
 RUN python manage.py collectstatic --noinput
-
-RUN mkdir -p /app/media
 
 EXPOSE 8000
 
