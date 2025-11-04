@@ -172,3 +172,34 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Docker (для докера доп)
+docker-compose.override.yml
+
+# Database (дополнительно)
+*.db
+*.sqlite3
+*.sqlite3-*
+
+# Static files
+/staticfiles/
+/media/
+
+# Logs
+logs/
+
+# OS (дополнительно)
+.DS_Store
+Thumbs.db
+
+# Project specific
+.env.local
+.env.prod
+
+# Backup files
+*.bak
+*.backup
+
+# Temporary files
+*.tmp
+*.temp
