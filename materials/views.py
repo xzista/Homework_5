@@ -44,15 +44,15 @@ class CourseViewSet(ModelViewSet):
         if should_send_notification(instance):
             send_course_update_notification.delay(instance.id)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def update_lessons(self, request, pk=None):
         """Массовое обновление уроков курса"""
         course = self.get_object()
-        lessons_data = request.data.get('lessons', [])
+        lessons_data = request.data.get("lessons", [])
 
         updated_lessons = []
         for lesson_data in lessons_data:
-            lesson_id = lesson_data.get('id')
+            lesson_id = lesson_data.get("id")
             if lesson_id:
                 try:
                     lesson = Lesson.objects.get(id=lesson_id, course=course)
@@ -67,10 +67,10 @@ class CourseViewSet(ModelViewSet):
             for lesson_id in updated_lessons:
                 send_course_update_notification.delay(course.id, lesson_id)
 
-        return Response({
-            "message": f"Updated {len(updated_lessons)} lessons",
-            "updated_lessons": updated_lessons
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {"message": f"Updated {len(updated_lessons)} lessons", "updated_lessons": updated_lessons},
+            status=status.HTTP_200_OK,
+        )
 
     def get_permissions(self):
         if self.action == "create":
