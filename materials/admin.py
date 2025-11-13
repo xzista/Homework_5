@@ -1,0 +1,43 @@
+from django.contrib import admin
+
+from materials.models import Course, Lesson
+
+
+@admin.register(Course)
+class CourseAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "name",
+        "description",
+        "owner",
+        "price",
+        "preview_image",
+        "updated_at",
+    )
+    list_filter = ("owner",)
+    search_fields = (
+        "name",
+        "description",
+    )
+
+
+@admin.register(Lesson)
+class LessonAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "name",
+        "description",
+        "course",
+        "url_video",
+        "owner",
+        "price",
+        "preview_image",
+    )
+    list_filter = (
+        "owner",
+        "course",
+    )
+    search_fields = (
+        "name",
+        "description",
+    )

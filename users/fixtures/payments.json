@@ -1,0 +1,50 @@
+[
+{
+    "model": "users.payment",
+    "pk": 1,
+    "fields": {
+        "user": 2,
+        "data": "2025-09-28T12:19:23.273Z",
+        "content_type": 7,
+        "object_id": 2,
+        "amount": "10000.00",
+        "payment_method": "cash"
+    }
+},
+{
+    "model": "users.payment",
+    "pk": 2,
+    "fields": {
+        "user": 3,
+        "data": "2025-09-28T12:19:40.130Z",
+        "content_type": 8,
+        "object_id": 1,
+        "amount": "3000.00",
+        "payment_method": "transfer"
+    }
+},
+{
+    "model": "users.payment",
+    "pk": 3,
+    "fields": {
+        "user": 4,
+        "data": "2025-09-28T12:20:09.723Z",
+        "content_type": 8,
+        "object_id": 2,
+        "amount": "4000.00",
+        "payment_method": "transfer"
+    }
+},
+{
+    "model": "users.payment",
+    "pk": 4,
+    "fields": {
+        "user": 3,
+        "data": "2025-09-28T12:20:24.616Z",
+        "content_type": 7,
+        "object_id": 2,
+        "amount": "9000.00",
+        "payment_method": "cash"
+    }
+}
+]
