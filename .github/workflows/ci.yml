@@ -61,7 +61,7 @@ jobs:
 
       - name: Wait for Postgres
         run: |
-          until pg_isready -h posgres -p 5432; do
+          until pg_isready -h postgres -p 5432; do
             echo "Waiting for postgres..."
             sleep 1
           done
@@ -73,9 +73,9 @@ jobs:
           POSTGRES_DB: test_db
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
-          POSTGRES_HOST: "postgres"
+          POSTGRES_HOST: "127.0.0.1"
           POSTGRES_PORT: "5432"
-          REDIS_HOST: "redis"
+          REDIS_HOST: "127.0.0.1"
           REDIS_PORT: "6379"
         run: python manage.py migrate --noinput
 
@@ -86,9 +86,9 @@ jobs:
           POSTGRES_DB: test_db
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
-          POSTGRES_HOST: "postgres"
+          POSTGRES_HOST: "127.0.0.1"
           POSTGRES_PORT: "5432"
-          REDIS_HOST: "redis"
+          REDIS_HOST: "127.0.0.1"
           REDIS_PORT: "6379"
         run: python manage.py test --noinput
 
