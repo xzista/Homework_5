@@ -72,19 +72,6 @@ jobs:
         REDIS_PORT: "6379"
       run: python manage.py migrate --noinput
 
-    - name: Run migrations
-      env:
-        DEBUG: "True"
-        SECRET_KEY: ${{ secrets.TEST_SECRET_KEY }}
-        NAME_DB: ${{ secrets.TEST_NAME_DB }}
-        USER_DB: ${{ secrets.TEST_USER_DB }}
-        PASSWORD_DB: ${{ secrets.TEST_PASSWORD_DB }}
-        HOST: "postgres"
-        PORT: "5432"
-        REDIS_HOST: "redis"
-        REDIS_PORT: "6379"
-      run: python manage.py migrate --noinput
-
   build:
     runs-on: ubuntu-latest
     needs: test
