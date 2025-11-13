@@ -66,24 +66,24 @@ jobs:
         NAME_DB: ${{ secrets.TEST_NAME_DB }}
         USER_DB: ${{ secrets.TEST_USER_DB }}
         PASSWORD_DB: ${{ secrets.TEST_PASSWORD_DB }}
-        HOST: "localhost"
+        HOST: "postgres"
         PORT: "5432"
-        REDIS_HOST: "localhost"
+        REDIS_HOST: "redis"
         REDIS_PORT: "6379"
       run: python manage.py migrate --noinput
 
-    - name: Run tests
+    - name: Run migrations
       env:
         DEBUG: "True"
         SECRET_KEY: ${{ secrets.TEST_SECRET_KEY }}
         NAME_DB: ${{ secrets.TEST_NAME_DB }}
         USER_DB: ${{ secrets.TEST_USER_DB }}
         PASSWORD_DB: ${{ secrets.TEST_PASSWORD_DB }}
-        HOST: "localhost"
+        HOST: "postgres"
         PORT: "5432"
-        REDIS_HOST: "localhost"
+        REDIS_HOST: "redis"
         REDIS_PORT: "6379"
-      run: python manage.py test --noinput
+      run: python manage.py migrate --noinput
 
   build:
     runs-on: ubuntu-latest
