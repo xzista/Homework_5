@@ -77,11 +77,21 @@ jobs:
       -   name: Deploy to server
           run: |
             ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+              echo '--- CHECK AND PREPARE DIRECTORY ---' &&
+              mkdir -p /var/www/Homework_5 &&
               cd /var/www/Homework_5 &&
             
-              echo '--- PULL LATEST CODE ---' &&
-              git fetch origin &&
-              git reset --hard origin/main &&
+              echo '--- CLONE OR PULL REPOSITORY ---' &&
+              if [ -d .git ]; then
+                echo 'Git repository exists, pulling latest changes' &&
+                git fetch origin &&
+                git reset --hard origin/main
+              else
+                echo 'Cloning fresh repository' &&
+                git clone https://github.com/xzista/Homework_5 /var/www/Homework_5_temp &&
+                mv /var/www/Homework_5_temp/.git /var/www/Homework_5/ &&
+                rm -rf /var/www/Homework_5_temp
+              fi &&
             
               echo '--- CLEAN DOCKER CACHE ---' &&
               docker system prune -af &&
