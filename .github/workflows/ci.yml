@@ -76,21 +76,21 @@ jobs:
 
       -   name: Deploy to server
           run: |
-            ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-              set -e
-            
-              echo '--- STOP DOCKER CONTAINERS ---'
+            ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+              # Остановить контейнеры если есть
               cd /var/www/Homework_5 && docker compose down || true
             
-              echo '--- CLEAN PROJECT DIRECTORY ---'
+              # Удалить старую версию
               sudo rm -rf /var/www/Homework_5
             
-              echo '--- CLONE FRESH REPOSITORY ---'
+              # Клонировать свежую версию
               git clone https://github.com/xzista/Homework_5 /var/www/Homework_5
+            
+              # Перейти в папку проекта
               cd /var/www/Homework_5
             
-              echo '--- CREATE .env FILE ---'
-              sudo tee .env > /dev/null << EOL
+              # Создать .env файл
+              cat > .env << EOL
               SECRET_KEY=${{ secrets.SECRET_KEY }}
               DEBUG=False
               POSTGRES_DB=${{ secrets.POSTGRES_DB }}
@@ -101,37 +101,13 @@ jobs:
               NAME_DB=${{ secrets.POSTGRES_DB }}
               USER_DB=${{ secrets.POSTGRES_USER }}
               PASSWORD_DB=${{ secrets.POSTGRES_PASSWORD }}
-              EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
-              EMAIL_HOST=localhost
-              EMAIL_PORT=587
-              EMAIL_USE_TLS=True
-              EMAIL_HOST_USER=
-              EMAIL_HOST_PASSWORD=
-              STRIPE_API_KEY=sk_test_dummy_key
               EOL
             
-              echo '--- FIX PERMISSIONS ---'
-              sudo chown -R $USER:$USER /var/www/Homework_5
-              sudo chmod -R 755 /var/www/Homework_5
-            
-              echo '--- CLEAN DOCKER CACHE ---'
-              docker system prune -af
-            
-              echo '--- BUILD & START DOCKER ---'
+              # Запустить Docker
               docker compose build --no-cache
               docker compose up -d
-            
-              echo '--- WAIT FOR SERVICES TO START ---'
-              sleep 30
-            
-              echo '--- CHECK CONTAINERS STATUS ---'
-              docker compose ps
-            
-              echo '--- APPLY MIGRATIONS ---'
+              sleep 15
               docker compose exec -T backend python manage.py migrate --noinput
-            
-              echo '--- COLLECTSTATIC ---'
               docker compose exec -T backend python manage.py collectstatic --noinput --clear
-            
-              echo '--- DEPLOYMENT COMPLETE ---'
-            EOF
+              echo 'DEPLOYMENT COMPLETE'
+            "
