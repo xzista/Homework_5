@@ -20,7 +20,7 @@ COPY . .
 ARG SECRET_KEY
 ENV SECRET_KEY=${SECRET_KEY}
 
-RUN python manage.py collectstatic --noinput
+# RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
