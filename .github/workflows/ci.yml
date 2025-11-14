@@ -82,6 +82,27 @@ jobs:
               git clone https://github.com/xzista/Homework_5 /var/www/Homework_5 &&
               cd /var/www/Homework_5 &&
             
+              echo '--- CREATE .env FILE ---' &&
+              cat > .env << EOL
+              SECRET_KEY=${{ secrets.SECRET_KEY }}
+              DEBUG=False
+              POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+              POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+              POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+              POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
+              POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
+              NAME_DB=${{ secrets.POSTGRES_DB }}
+              USER_DB=${{ secrets.POSTGRES_USER }}
+              PASSWORD_DB=${{ secrets.POSTGRES_PASSWORD }}
+              EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+              EMAIL_HOST=localhost
+              EMAIL_PORT=587
+              EMAIL_USE_TLS=True
+              EMAIL_HOST_USER=
+              EMAIL_HOST_PASSWORD=
+              STRIPE_API_KEY=sk_test_dummy_key
+              EOL
+            
               echo '--- CLEAN DOCKER CACHE ---' &&
               docker system prune -af &&
               docker volume prune -f &&
@@ -107,7 +128,7 @@ jobs:
               ) up -d &&
             
               echo '--- WAIT FOR SERVICES TO START ---' &&
-              sleep 30 &&
+              sleep 10 &&
             
               echo '--- APPLY MIGRATIONS ---' &&
               docker compose exec -T backend python manage.py migrate --noinput &&
