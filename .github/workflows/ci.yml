@@ -76,14 +76,21 @@ jobs:
 
       -   name: Deploy to server
           run: |
-            ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-              echo '--- CLEAN AND CLONE REPOSITORY ---' &&
-              rm -rf /var/www/Homework_5 &&
-              git clone https://github.com/xzista/Homework_5 /var/www/Homework_5 &&
-              cd /var/www/Homework_5 &&
+            ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+              set -e
             
-              echo '--- CREATE .env FILE ---' &&
-              cat > .env << EOL
+              echo '--- STOP DOCKER CONTAINERS ---'
+              cd /var/www/Homework_5 && docker compose down || true
+            
+              echo '--- CLEAN PROJECT DIRECTORY ---'
+              sudo rm -rf /var/www/Homework_5
+            
+              echo '--- CLONE FRESH REPOSITORY ---'
+              git clone https://github.com/xzista/Homework_5 /var/www/Homework_5
+              cd /var/www/Homework_5
+            
+              echo '--- CREATE .env FILE ---'
+              sudo tee .env > /dev/null << EOL
               SECRET_KEY=${{ secrets.SECRET_KEY }}
               DEBUG=False
               POSTGRES_DB=${{ secrets.POSTGRES_DB }}
@@ -103,38 +110,28 @@ jobs:
               STRIPE_API_KEY=sk_test_dummy_key
               EOL
             
-              echo '--- CLEAN DOCKER CACHE ---' &&
-              docker system prune -af &&
-              docker volume prune -f &&
+              echo '--- FIX PERMISSIONS ---'
+              sudo chown -R $USER:$USER /var/www/Homework_5
+              sudo chmod -R 755 /var/www/Homework_5
             
-              echo '--- BUILD & RESTART DOCKER ---' &&
-              docker compose down || true &&
-              docker compose --env-file <(echo \\
-                'SECRET_KEY=${{ secrets.SECRET_KEY }}\\
-                POSTGRES_DB=${{ secrets.POSTGRES_DB }}\\
-                POSTGRES_USER=${{ secrets.POSTGRES_USER }}\\
-                POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}\\
-                POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}\\
-                POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}'\\
-              ) build --no-cache &&
+              echo '--- CLEAN DOCKER CACHE ---'
+              docker system prune -af
             
-              docker compose --env-file <(echo \\
-                'SECRET_KEY=${{ secrets.SECRET_KEY }}\\
-                POSTGRES_DB=${{ secrets.POSTGRES_DB }}\\
-                POSTGRES_USER=${{ secrets.POSTGRES_USER }}\\
-                POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}\\
-                POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}\\
-                POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}'\\
-              ) up -d &&
+              echo '--- BUILD & START DOCKER ---'
+              docker compose build --no-cache
+              docker compose up -d
             
-              echo '--- WAIT FOR SERVICES TO START ---' &&
-              sleep 10 &&
+              echo '--- WAIT FOR SERVICES TO START ---'
+              sleep 30
             
-              echo '--- APPLY MIGRATIONS ---' &&
-              docker compose exec -T backend python manage.py migrate --noinput &&
+              echo '--- CHECK CONTAINERS STATUS ---'
+              docker compose ps
             
-              echo '--- COLLECTSTATIC ---' &&
-              docker compose exec -T backend python manage.py collectstatic --noinput --clear &&
+              echo '--- APPLY MIGRATIONS ---'
+              docker compose exec -T backend python manage.py migrate --noinput
+            
+              echo '--- COLLECTSTATIC ---'
+              docker compose exec -T backend python manage.py collectstatic --noinput --clear
             
               echo '--- DEPLOYMENT COMPLETE ---'
-            "
+            EOF
