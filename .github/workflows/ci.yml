@@ -110,7 +110,9 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build Docker image
-        run: docker build -t education-platform:latest .
+        run: docker build \
+          --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
+          -t education-platform:latest .
 
   deploy:
     runs-on: ubuntu-latest
