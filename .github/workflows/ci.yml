@@ -80,25 +80,34 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /var/www/Homework_5
-
-            echo "--- PULL LATEST CODE ---"
-            git pull origin main
-
-            echo "--- EXPORT ENV FOR DOCKER COMPOSE ---"
-            export SECRET_KEY=${{ secrets.SECRET_KEY }}
-            export POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-            export POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-            export POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            export POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
-            export POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
+  
+            echo "--- RESET & PULL CODE ---"
+            git fetch origin
+            git reset --hard origin/main
+  
+            echo "--- SET ENVIRONMENT VARIABLES ---"
+            export SECRET_KEY='${{ secrets.SECRET_KEY }}'
+            export POSTGRES_DB='${{ secrets.POSTGRES_DB }}'
+            export POSTGRES_USER='${{ secrets.POSTGRES_USER }}'
+            export POSTGRES_PASSWORD='${{ secrets.POSTGRES_PASSWORD }}'
+            export POSTGRES_HOST='${{ secrets.POSTGRES_HOST }}'
+            export POSTGRES_PORT='${{ secrets.POSTGRES_PORT }}'
 
             echo "--- BUILD & RESTART DOCKER ---"
-            docker compose down
-            docker compose build
+            docker compose down || true
+            docker compose build --no-cache
             docker compose up -d
-
+  
+            echo "--- WAIT FOR SERVICES TO START ---"
+            sleep 30
+  
             echo "--- APPLY MIGRATIONS ---"
-            docker compose exec backend python manage.py migrate --noinput
+            docker compose exec -T backend python manage.py migrate --noinput
+  
+            echo "--- COLLECTSTATIC ---"
+            docker compose exec -T backend python manage.py collectstatic --noinput --clear
+  
+            echo "--- DEPLOYMENT COMPLETE ---"
 
             echo "--- COLLECTSTATIC ---"
             docker compose exec backend python manage.py collectstatic --noinput
