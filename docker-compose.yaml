@@ -3,9 +3,9 @@ services:
     image: postgres:16
     container_name: education_db
     environment:
-      POSTGRES_DB: ${NAME_DB}
-      POSTGRES_USER: ${USER_DB}
-      POSTGRES_PASSWORD: ${PASSWORD_DB}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
