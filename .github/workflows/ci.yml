@@ -83,6 +83,10 @@ jobs:
               git fetch origin &&
               git reset --hard origin/main &&
             
+              echo '--- CLEAN DOCKER CACHE ---' &&
+              docker system prune -af &&
+              docker volume prune -f &&
+            
               echo '--- BUILD & RESTART DOCKER ---' &&
               docker compose down || true &&
               docker compose --env-file <(echo \\
