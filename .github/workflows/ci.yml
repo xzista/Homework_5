@@ -102,7 +102,7 @@ jobs:
               NAME_DB=${{ secrets.POSTGRES_DB }}
               USER_DB=${{ secrets.POSTGRES_USER }}
               PASSWORD_DB=${{ secrets.POSTGRES_PASSWORD }}
-              ALLOWED_HOSTS=158.160.202.19,localhost,127.0.0.1,0.0.0.0
+              ALLOWED_HOSTS=158.160.202.19,158.160.202.19:8000,localhost,127.0.0.1,0.0.0.0
               EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
               EMAIL_HOST=localhost
               EMAIL_PORT=587
