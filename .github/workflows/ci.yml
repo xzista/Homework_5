@@ -76,10 +76,12 @@ jobs:
             username: ${{ secrets.SERVER_USER }}
             key: ${{ secrets.SERVER_SSH_KEY }}
             script: |
-              cd /var/www/Homework_5
+              echo "--- CLEAN OLD PROJECT ---"
+              sudo rm -rf /var/www/Homework_5
               
-              echo "--- PULL LATEST CODE ---"
-              git pull origin main
+              echo "--- CLONE FRESH REPOSITORY ---"
+              git clone https://github.com/xzista/Homework_5 /var/www/Homework_5
+              cd /var/www/Homework_5
               
               echo "--- CREATE COMPLETE .env FILE ---"
               cat > .env << EOL
@@ -105,19 +107,26 @@ jobs:
               
               echo "--- CLEAN DOCKER CACHE ---"
               docker system prune -af
+              docker volume prune -f
               
-              echo "--- RESTART DOCKER ---"
-              docker compose -f docker-compose.yaml down
+              echo "--- START DOCKER ---"
+              docker compose -f docker-compose.yaml down || true
               docker compose -f docker-compose.yaml build --no-cache
               docker compose -f docker-compose.yaml up -d
               
               echo "--- WAIT FOR SERVICES ---"
               sleep 10
               
+              echo "--- CHECK BACKEND STATUS ---"
+              docker compose -f docker-compose.yaml ps
+              
               echo "--- CHECK BACKEND LOGS ---"
               docker compose -f docker-compose.yaml logs backend --tail=10
               
-              echo "--- CHECK BACKEND ENVIRONMENT ---"
-              docker compose -f docker-compose.yaml exec backend env | grep ALLOWED_HOSTS || echo "ALLOWED_HOSTS not found in environment"
+              echo "--- APPLY MIGRATIONS ---"
+              docker compose -f docker-compose.yaml exec -T backend python manage.py migrate --noinput
+              
+              echo "--- COLLECTSTATIC ---"
+              docker compose -f docker-compose.yaml exec -T backend python manage.py collectstatic --noinput
               
               echo "--- DEPLOYMENT COMPLETE ---"
