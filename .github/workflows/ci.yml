@@ -69,10 +69,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      -   name: Checkout
-          uses: actions/checkout@v4
-
-      -   name: Deploy on server (git pull + env + compose)
+      -   name: Deploy to server
           uses: appleboy/ssh-action@v1.0.3
           with:
             host: ${{ secrets.SERVER_HOST }}
@@ -80,44 +77,49 @@ jobs:
             key: ${{ secrets.SERVER_SSH_KEY }}
             script: |
               set -e
-          
-              cd /var/www/Homework_5
               
-              echo "Switch to main branch and fetch latest code"
-              git fetch --all
-              git checkout main
-              git reset --hard origin/main
+              echo "--- CLEAN OLD PROJECT ---"
+              sudo rm -rf /var/www/Homework_5
               
-              echo "Writing .env from secrets"
-              cat > .env <<EOF
+              echo "--- CLONE FRESH REPOSITORY ---"
+              cd /var/www
+              git clone https://github.com/xzista/Homework_5.git Homework_5
+              cd Homework_5
+              
+              echo "--- CREATE .env FILE ---"
+              cat > .env << EOF
               SECRET_KEY=${{ secrets.SECRET_KEY }}
-              DEBUG=${{ secrets.DEBUG }}
+              DEBUG=True
               POSTGRES_DB=${{ secrets.POSTGRES_DB }}
               POSTGRES_USER=${{ secrets.POSTGRES_USER }}
               POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-              POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
-              POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
-              REDIS_HOST=${{ secrets.REDIS_HOST }}
-              REDIS_PORT=${{ secrets.REDIS_PORT }}
-              ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
-            
-              EMAIL_BACKEND=${{ secrets.EMAIL_BACKEND }}
-              EMAIL_HOST=${{ secrets.EMAIL_HOST }}
-              EMAIL_PORT=${{ secrets.EMAIL_PORT }}
-              EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}
+              POSTGRES_HOST=db
+              POSTGRES_PORT=5432
+              REDIS_HOST=redis
+              REDIS_PORT=6379
+              ALLOWED_HOSTS=*
+              EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+              EMAIL_HOST=localhost
+              EMAIL_PORT=587
+              EMAIL_USE_TLS=True
               EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
               EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
-            
               STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
               EOF
-  
-              echo "Rebuilding containers (prod compose)"
+              
+              echo "--- CLEAN DOCKER ---"
+              docker system prune -af
+              
+              echo "--- BUILD AND START CONTAINERS ---"
               docker compose -f docker-compose.prod.yaml down || true
               docker compose -f docker-compose.prod.yaml build --no-cache
               docker compose -f docker-compose.prod.yaml up -d
               
-              echo "Apply migrations"
+              echo "--- APPLY MIGRATIONS ---"
+              sleep 30
               docker compose -f docker-compose.prod.yaml exec -T web python manage.py migrate --noinput
               
-              echo "Collect static"
+              echo "--- COLLECT STATIC ---"
               docker compose -f docker-compose.prod.yaml exec -T web python manage.py collectstatic --noinput
+              
+              echo "--- DEPLOYMENT COMPLETE ---"
