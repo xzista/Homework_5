@@ -70,45 +70,53 @@ jobs:
 
     steps:
       -   name: Checkout
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
 
-      -   name: Copy project to server
-          uses: appleboy/scp-action@v0.1.7
-          with:
-            host: ${{ secrets.SERVER_HOST }}
-            username: ${{ secrets.SERVER_USER }}
-            key: ${{ secrets.SERVER_SSH_KEY }}
-            source: "."
-            target: "/var/www/Homework_5"
-
-      -   name: Deploy on server
+      -   name: Deploy on server (git pull + env + compose)
           uses: appleboy/ssh-action@v1.0.3
           with:
             host: ${{ secrets.SERVER_HOST }}
             username: ${{ secrets.SERVER_USER }}
             key: ${{ secrets.SERVER_SSH_KEY }}
             script: |
+              set -e
+              
               cd /var/www/Homework_5
               
-              echo "--- CREATE .env ---"
-              cat > .env << EOL
+              echo "Fetching latest code"
+              git fetch --all
+              git reset --hard origin/main
+              
+              echo "Writing .env from secrets"
+              cat > .env <<EOF
               SECRET_KEY=${{ secrets.SECRET_KEY }}
-              DEBUG=True
+              DEBUG=${{ secrets.DEBUG }}
               POSTGRES_DB=${{ secrets.POSTGRES_DB }}
               POSTGRES_USER=${{ secrets.POSTGRES_USER }}
               POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-              POSTGRES_HOST=db
-              POSTGRES_PORT=5432
-              ALLOWED_HOSTS=*
-              EOL
+              POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
+              POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
+              REDIS_HOST=${{ secrets.REDIS_HOST }}
+              REDIS_PORT=${{ secrets.REDIS_PORT }}
+              ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
+            
+              EMAIL_BACKEND=${{ secrets.EMAIL_BACKEND }}
+              EMAIL_HOST=${{ secrets.EMAIL_HOST }}
+              EMAIL_PORT=${{ secrets.EMAIL_PORT }}
+              EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}
+              EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
+              EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
+            
+              STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
+              EOF
+  
+              echo "Rebuilding containers (prod compose)"
+              docker compose -f docker-compose.prod.yaml down || true
+              docker compose -f docker-compose.prod.yaml build --no-cache
+              docker compose -f docker-compose.prod.yaml up -d
               
-              echo "--- RESTART DOCKER ---"
-              docker compose down || true
-              docker compose build
-              docker compose up -d
+              echo "Apply migrations"
+              docker compose -f docker-compose.prod.yaml exec -T web python manage.py migrate --noinput
               
-              echo "--- APPLY MIGRATIONS ---"
-              docker compose exec -T backend python manage.py migrate --noinput
-              
-              echo "--- COLLECTSTATIC ---"
-              docker compose exec -T backend python manage.py collectstatic --noinput
+              echo "Collect static"
+              docker compose -f docker-compose.prod.yaml exec -T web python manage.py collectstatic --noinput
