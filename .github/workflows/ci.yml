@@ -111,15 +111,15 @@ jobs:
               docker system prune -af
               
               echo "--- BUILD AND START CONTAINERS ---"
-              docker compose -f docker-compose.prod.yaml down || true
-              docker compose -f docker-compose.prod.yaml build --no-cache
-              docker compose -f docker-compose.prod.yaml up -d
+              docker compose -f docker-compose.yaml down || true
+              docker compose -f docker-compose.yaml build --no-cache
+              docker compose -f docker-compose.yaml up -d
               
               echo "--- APPLY MIGRATIONS ---"
               sleep 30
-              docker compose -f docker-compose.prod.yaml exec -T web python manage.py migrate --noinput
+              docker compose -f docker-compose.yaml exec -T web python manage.py migrate --noinput
               
               echo "--- COLLECT STATIC ---"
-              docker compose -f docker-compose.prod.yaml exec -T web python manage.py collectstatic --noinput
+              docker compose -f docker-compose.yaml exec -T web python manage.py collectstatic --noinput
               
               echo "--- DEPLOYMENT COMPLETE ---"
