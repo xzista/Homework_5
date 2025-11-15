@@ -75,65 +75,68 @@ jobs:
             host: ${{ secrets.SERVER_HOST }}
             username: ${{ secrets.SERVER_USER }}
             key: ${{ secrets.SERVER_SSH_KEY }}
+
             script: |
               echo "--- CLEAN OLD PROJECT ---"
               sudo rm -rf /var/www/Homework_5
               
-              echo "--- CLONE FRESH REPOSITORY ---"
+              echo "--- CLONE PROJECT ---"
               cd /var/www
               git clone https://github.com/xzista/Homework_5 Homework_5
               
-              echo "--- VERIFY CLONE SUCCESS ---"
-              cd Homework_5
-              pwd
-              ls -la
-              echo "Docker compose files:"
-              ls -la docker-compose*
-              
               echo "--- CREATE .env FILE ---"
-              cat > .env << EOL
+              cd Homework_5
+              
+              # Создаём .env БЕЗ отступов — строгое требование для Django
+              cat << 'EOF' > .env
               SECRET_KEY=${{ secrets.SECRET_KEY }}
-              DEBUG=True
+              DEBUG=False
+            
               POSTGRES_DB=${{ secrets.POSTGRES_DB }}
               POSTGRES_USER=${{ secrets.POSTGRES_USER }}
               POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
               POSTGRES_HOST=db
               POSTGRES_PORT=5432
+            
               NAME_DB=${{ secrets.POSTGRES_DB }}
               USER_DB=${{ secrets.POSTGRES_USER }}
               PASSWORD_DB=${{ secrets.POSTGRES_PASSWORD }}
-              ALLOWED_HOSTS=158.160.202.19,158.160.202.19:8000,localhost,127.0.0.1,0.0.0.0
-              EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
-              EMAIL_HOST=localhost
-              EMAIL_PORT=587
+            
+              ALLOWED_HOSTS=158.160.202.19,localhost,127.0.0.1
+            
+              EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+              EMAIL_HOST=${{ secrets.EMAIL_HOST }}
+              EMAIL_PORT=${{ secrets.EMAIL_PORT }}
               EMAIL_USE_TLS=True
               EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
               EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
+            
               STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
-              EOL
+              EOF
               
-              echo "--- CLEAN DOCKER CACHE ---"
+              echo "--- CHECK .env FILE ---"
+              cat .env
+              
+              echo "--- STOP OLD CONTAINERS ---"
+              docker compose -f docker-compose.yaml down || true
+              
+              echo "--- REMOVE OLD CACHE ---"
               docker system prune -af
               docker volume prune -f
               
-              echo "--- START DOCKER ---"
-              docker compose -f docker-compose.yaml down || true
+              echo "--- BUILD DOCKER IMAGES ---"
               docker compose -f docker-compose.yaml build --no-cache
+              
+              echo "--- START CONTAINERS ---"
               docker compose -f docker-compose.yaml up -d
               
-              echo "--- WAIT FOR SERVICES ---"
+              echo "--- WAIT 10 SEC ---"
               sleep 10
-              
-              echo "--- CHECK BACKEND STATUS ---"
-              docker compose -f docker-compose.yaml ps
-              
-              echo "--- CHECK BACKEND LOGS ---"
-              docker compose -f docker-compose.yaml logs backend --tail=10
               
               echo "--- APPLY MIGRATIONS ---"
               docker compose -f docker-compose.yaml exec -T backend python manage.py migrate --noinput
               
-              echo "--- COLLECTSTATIC ---"
+              echo "--- COLLECT STATIC ---"
               docker compose -f docker-compose.yaml exec -T backend python manage.py collectstatic --noinput
               
-              echo "--- DEPLOYMENT COMPLETE ---"
+              echo "--- DEPLOY COMPLETE ---"
