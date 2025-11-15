@@ -114,21 +114,10 @@ jobs:
               echo "--- WAIT FOR SERVICES ---"
               sleep 10
               
-              echo "--- CHECK ALL CONTAINERS ---"
-              docker compose -f docker-compose.yaml ps -a
-              
               echo "--- CHECK BACKEND LOGS ---"
-              docker compose -f docker-compose.yaml logs backend || true
+              docker compose -f docker-compose.yaml logs backend --tail=10
               
-              echo "--- CHECK IF BACKEND IS RUNNING ---"
-              if docker compose -f docker-compose.yaml ps backend | grep -q "Up"; then
-                echo "Backend is running, applying migrations..."
-                docker compose -f docker-compose.yaml exec -T backend python manage.py migrate --noinput
-                docker compose -f docker-compose.yaml exec -T backend python manage.py collectstatic --noinput
-              else
-                echo "Backend is not running, skipping migrations and collectstatic"
-                echo "Last backend logs:"
-                docker compose -f docker-compose.yaml logs backend --tail=20
-              fi
+              echo "--- CHECK BACKEND ENVIRONMENT ---"
+              docker compose -f docker-compose.yaml exec backend env | grep ALLOWED_HOSTS || echo "ALLOWED_HOSTS not found in environment"
               
               echo "--- DEPLOYMENT COMPLETE ---"
