@@ -93,7 +93,7 @@ jobs:
               echo "--- CREATE .env FILE ---"
               cat > .env << EOL
               SECRET_KEY=${{ secrets.SECRET_KEY }}
-              DEBUG=False
+              DEBUG=True
               POSTGRES_DB=${{ secrets.POSTGRES_DB }}
               POSTGRES_USER=${{ secrets.POSTGRES_USER }}
               POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
