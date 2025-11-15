@@ -93,7 +93,7 @@ jobs:
               NAME_DB=${{ secrets.POSTGRES_DB }}
               USER_DB=${{ secrets.POSTGRES_USER }}
               PASSWORD_DB=${{ secrets.POSTGRES_PASSWORD }}
-              ALLOWED_HOSTS=*
+              ALLOWED_HOSTS=158.160.202.19,localhost,127.0.0.1
               EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
               EMAIL_HOST=localhost
               EMAIL_PORT=587
@@ -103,13 +103,19 @@ jobs:
               STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
               EOL
               
+              echo "--- CLEAN DOCKER CACHE ---"
+              docker system prune -af
+              
               echo "--- RESTART DOCKER ---"
               docker compose -f docker-compose.yaml down
               docker compose -f docker-compose.yaml build --no-cache
               docker compose -f docker-compose.yaml up -d
               
               echo "--- WAIT FOR SERVICES ---"
-              sleep 10
+              sleep 30
+              
+              echo "--- CHECK BACKEND STATUS ---"
+              docker compose -f docker-compose.yaml ps backend
               
               echo "--- APPLY MIGRATIONS ---"
               docker compose -f docker-compose.yaml exec -T backend python manage.py migrate --noinput
