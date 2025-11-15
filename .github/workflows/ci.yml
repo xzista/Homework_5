@@ -69,45 +69,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      -   name: Set up SSH
-          uses: webfactory/ssh-agent@v0.9.0
-          with:
-            ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
-
       -   name: Deploy to server
-          run: |
-            ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-              # Остановить контейнеры если есть
-              cd /var/www/Homework_5 && docker compose down || true
-            
-              # Удалить старую версию
-              sudo rm -rf /var/www/Homework_5
-            
-              # Клонировать свежую версию
-              git clone https://github.com/xzista/Homework_5 /var/www/Homework_5
-            
-              # Перейти в папку проекта
+          uses: appleboy/ssh-action@v1.0.3
+          with:
+            host: ${{ secrets.SERVER_HOST }}
+            username: ${{ secrets.SERVER_USER }}
+            key: ${{ secrets.SERVER_SSH_KEY }}
+            script: |
               cd /var/www/Homework_5
-            
-              # Создать .env файл
+              
+              echo "--- PULL LATEST CODE ---"
+              git pull origin main
+              
+              echo "--- CREATE .env FILE ---"
               cat > .env << EOL
               SECRET_KEY=${{ secrets.SECRET_KEY }}
               DEBUG=False
               POSTGRES_DB=${{ secrets.POSTGRES_DB }}
               POSTGRES_USER=${{ secrets.POSTGRES_USER }}
               POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-              POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
-              POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
+              POSTGRES_HOST=db
+              POSTGRES_PORT=5432
               NAME_DB=${{ secrets.POSTGRES_DB }}
               USER_DB=${{ secrets.POSTGRES_USER }}
               PASSWORD_DB=${{ secrets.POSTGRES_PASSWORD }}
               EOL
-            
-              # Запустить Docker
-              docker compose build --no-cache
-              docker compose up -d
+              
+              echo "--- RESTART DOCKER ---"
+              docker compose -f docker-compose.yaml down
+              docker compose -f docker-compose.yaml build --no-cache
+              docker compose -f docker-compose.yaml up -d
+              
+              echo "--- WAIT FOR SERVICES ---"
               sleep 15
-              docker compose exec -T backend python manage.py migrate --noinput
-              docker compose exec -T backend python manage.py collectstatic --noinput --clear
-              echo 'DEPLOYMENT COMPLETE'
-            "
+              
+              echo "--- APPLY MIGRATIONS ---"
+              docker compose -f docker-compose.yaml exec backend python manage.py migrate --noinput
+              
+              echo "--- COLLECTSTATIC ---"
+              docker compose -f docker-compose.yaml exec backend python manage.py collectstatic --noinput
+              
+              echo "--- DEPLOYMENT COMPLETE ---"
