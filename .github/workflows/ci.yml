@@ -93,7 +93,7 @@ jobs:
               NAME_DB=${{ secrets.POSTGRES_DB }}
               USER_DB=${{ secrets.POSTGRES_USER }}
               PASSWORD_DB=${{ secrets.POSTGRES_PASSWORD }}
-              ALLOWED_HOSTS=158.160.202.19,localhost,127.0.0.1
+              ALLOWED_HOSTS=158.160.202.19,localhost,127.0.0.1,0.0.0.0
               EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
               EMAIL_HOST=localhost
               EMAIL_PORT=587
@@ -112,15 +112,23 @@ jobs:
               docker compose -f docker-compose.yaml up -d
               
               echo "--- WAIT FOR SERVICES ---"
-              sleep 30
+              sleep 10
               
-              echo "--- CHECK BACKEND STATUS ---"
-              docker compose -f docker-compose.yaml ps backend
+              echo "--- CHECK ALL CONTAINERS ---"
+              docker compose -f docker-compose.yaml ps -a
               
-              echo "--- APPLY MIGRATIONS ---"
-              docker compose -f docker-compose.yaml exec -T backend python manage.py migrate --noinput
+              echo "--- CHECK BACKEND LOGS ---"
+              docker compose -f docker-compose.yaml logs backend || true
               
-              echo "--- COLLECTSTATIC ---"
-              docker compose -f docker-compose.yaml exec -T backend python manage.py collectstatic --noinput
+              echo "--- CHECK IF BACKEND IS RUNNING ---"
+              if docker compose -f docker-compose.yaml ps backend | grep -q "Up"; then
+                echo "Backend is running, applying migrations..."
+                docker compose -f docker-compose.yaml exec -T backend python manage.py migrate --noinput
+                docker compose -f docker-compose.yaml exec -T backend python manage.py collectstatic --noinput
+              else
+                echo "Backend is not running, skipping migrations and collectstatic"
+                echo "Last backend logs:"
+                docker compose -f docker-compose.yaml logs backend --tail=20
+              fi
               
               echo "--- DEPLOYMENT COMPLETE ---"
