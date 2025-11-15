@@ -1,5 +1,6 @@
-from django.utils import timezone
 from datetime import timedelta
+
+from django.utils import timezone
 
 
 def should_send_notification(course, lesson=None):
@@ -10,7 +11,7 @@ def should_send_notification(course, lesson=None):
     if lesson and lesson.course != course:
         return False
 
-    if hasattr(course, 'updated_at'):
+    if hasattr(course, "updated_at"):
         time_since_update = timezone.now() - course.updated_at
         return time_since_update > timedelta(hours=4)
 

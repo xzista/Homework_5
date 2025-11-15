@@ -26,7 +26,7 @@ class Course(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True,
         verbose_name="Дата последнего обновления",
-        help_text="Автоматически обновляется при изменении курса или его уроков"
+        help_text="Автоматически обновляется при изменении курса или его уроков",
     )
 
     class Meta:

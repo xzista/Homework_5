@@ -1,60 +1,53 @@
-[project]
+[tool.poetry]
 name = "homework-5"
 version = "0.1.0"
-description = ""
-authors = [
-    {name = "xziste",email = "17alexdmz99@gmail.com"}
-]
+description = "Django Education Platform"
+authors = ["xziste <17alexdmz99@gmail.com>"]
 readme = "README.md"
-requires-python = "^3.13"
-dependencies = [
-    "django (>=5.2.6,<6.0.0)",
-    "djangorestframework (>=3.16.1,<4.0.0)",
-    "psycopg2-binary (>=2.9.10,<3.0.0)",
-    "pillow (>=11.3.0,<12.0.0)",
-    "ipython (>=9.5.0,<10.0.0)",
-    "django-filter (>=25.1,<26.0)",
-    "djangorestframework-simplejwt (>=5.5.1,<6.0.0)",
-    "drf-yasg (>=1.21.11,<2.0.0)",
-    "stripe (>=13.0.1,<14.0.0)",
-    "requests (>=2.32.5,<3.0.0)",
-    "celery (>=5.5.3,<6.0.0)",
-    "redis (>=7.0.0,<8.0.0)",
-    "django-celery-beat (>=2.8.1,<3.0.0)",
-    "eventlet (>=0.40.3,<0.41.0)",
-]
+package-mode = false
 
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+django = "^5.2.6"
+djangorestframework = "^3.16.1"
+psycopg2-binary = "^2.9.10"
+pillow = "^11.3.0"
+ipython = "^9.5.0"
+django-filter = "^25.1"
+djangorestframework-simplejwt = "^5.5.1"
+drf-yasg = "^1.21.11"
+stripe = "^13.0.1"
+requests = "^2.32.5"
+celery = "^5.5.3"
+redis = "^7.0.0"
+django-celery-beat = "^2.8.1"
+eventlet = "^0.40.3"
+gunicorn = "^23.0.0"
+python-dotenv = "^1.1.1"
+
+[tool.poetry.group.dev.dependencies]
+coverage = "^7.10.7"
+flake8 = "^7.3.0"
+black = "^25.9.0"
+isort = "^6.0.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.group.lint.dependencies]
-black = "^25.9.0"
-isort = "^6.0.1"
-
-
-
-[tool.poetry.group.dev.dependencies]
-python-dotenv = "^1.1.1"
-coverage = "^7.10.7"
-
 [tool.black]
-# Максимальная длина строки
 line-length = 119
-# Файлы, которые не нужно форматировать
 exclude = '''
 (
   /(
-      \.eggs         # Исключить несколько общих каталогов
-    | \.git          # в корне проекта
+      \.eggs
+    | \.git
     | \.hg
     | \.mypy_cache
     | \.tox
     | \.venv
     | dist
   )/
-  | foo.py           # Также отдельно исключить файл с именем foo.py
-                     # в корне проекта
+  | foo.py
 )
 '''

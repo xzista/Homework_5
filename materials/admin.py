@@ -4,7 +4,7 @@ from materials.models import Course, Lesson
 
 
 @admin.register(Course)
-class PaymentAdmin(admin.ModelAdmin):
+class CourseAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "name",
@@ -22,7 +22,7 @@ class PaymentAdmin(admin.ModelAdmin):
 
 
 @admin.register(Lesson)
-class PaymentAdmin(admin.ModelAdmin):
+class LessonAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "name",

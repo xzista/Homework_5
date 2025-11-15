@@ -1,13 +1,13 @@
 from datetime import timedelta
 
 from celery import shared_task
-from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
 from django.utils import timezone
 
+from config.settings import EMAIL_HOST_USER
 from materials.models import Course, Lesson
 from users.models import Subscription
-from config.settings import EMAIL_HOST_USER
 
 User = get_user_model()
 
@@ -24,9 +24,7 @@ def send_course_update_notification(course_id, updated_lesson_id=None):
 
     for subscription in subscriptions:
         send_course_update_email.delay(
-            user_id=subscription.user.id,
-            course_id=course.id,
-            lesson_id=updated_lesson.id if updated_lesson else None
+            user_id=subscription.user.id, course_id=course.id, lesson_id=updated_lesson.id if updated_lesson else None
         )
 
     return f"Sent notifications to {subscriptions.count()} subscribers"
@@ -41,20 +39,20 @@ def send_course_update_email(user_id, course_id, lesson_id=None):
     course = Course.objects.get(id=course_id)
     lesson = Lesson.objects.get(id=lesson_id) if lesson_id else None
 
-    subject = f'Обновление курса: {course.name}'
+    subject = f"Обновление курса: {course.name}"
 
     if lesson:
-        message = f'''
+        message = f"""
             Здравствуйте, {user.first_name or user.username}!
 
             В курсе "{course.name}" был обновлен урок "{lesson.name}".
-            '''
+            """
     else:
-        message = f'''
+        message = f"""
             Здравствуйте, {user.first_name or user.username}!
 
             Курс "{course.name}" был обновлен.
-            '''
+            """
 
     send_mail(
         subject=subject,
@@ -74,10 +72,7 @@ def deactivate_inactive_users():
     """
     month_ago = timezone.now() - timedelta(days=30)
 
-    inactive_users = User.objects.filter(
-        last_login__lt=month_ago,
-        is_active=True
-    )
+    inactive_users = User.objects.filter(last_login__lt=month_ago, is_active=True)
 
     user_count = inactive_users.count()
 
