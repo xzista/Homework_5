@@ -80,11 +80,12 @@ jobs:
             key: ${{ secrets.SERVER_SSH_KEY }}
             script: |
               set -e
-              
+          
               cd /var/www/Homework_5
               
-              echo "Fetching latest code"
+              echo "Switch to main branch and fetch latest code"
               git fetch --all
+              git checkout main
               git reset --hard origin/main
               
               echo "Writing .env from secrets"
