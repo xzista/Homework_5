@@ -80,10 +80,17 @@ jobs:
               sudo rm -rf /var/www/Homework_5
               
               echo "--- CLONE FRESH REPOSITORY ---"
-              git clone https://github.com/xzista/Homework_5 /var/www/Homework_5
-              cd /var/www/Homework_5
+              cd /var/www
+              git clone https://github.com/xzista/Homework_5 Homework_5
               
-              echo "--- CREATE COMPLETE .env FILE ---"
+              echo "--- VERIFY CLONE SUCCESS ---"
+              cd Homework_5
+              pwd
+              ls -la
+              echo "Docker compose files:"
+              ls -la docker-compose*
+              
+              echo "--- CREATE .env FILE ---"
               cat > .env << EOL
               SECRET_KEY=${{ secrets.SECRET_KEY }}
               DEBUG=False
