@@ -44,13 +44,6 @@ jobs:
         run: poetry install --no-interaction --no-ansi
 
       - name: Run migrations
-#        env:
-#          SECRET_KEY: "TEST_KEY"
-#          POSTGRES_DB: test_db
-#          POSTGRES_USER: test_user
-#          POSTGRES_PASSWORD: test_password
-#          POSTGRES_HOST: 127.0.0.1
-#          POSTGRES_PORT: 5432
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY_TEST }}
           POSTGRES_DB: ${{ secrets.TEST_POSTGRES_DB }}
